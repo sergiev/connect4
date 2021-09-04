@@ -8,8 +8,8 @@ class Game:
         self.cols = width
         self.players_total = players
         self.round_counter = 1
-        self.check_directions = ((0, 1), (0, -1), (1, 0), (-1, 0),
-                                 (1, 1), (-1, 1), (-1, -1), (1, -1))
+        self.direction_pairs = (((0, 1), (0, -1)), ((1, 0), (-1, 0)),
+                                ((1, 1), (-1, -1)), ((-1, 1), (1, -1)))
         self.current_player = 1
 
     def add_chip(self, player_id: int, column: int) -> bool:
@@ -29,18 +29,19 @@ class Game:
         return True
 
     def win_check(self, player_id: int, row: int, column: int):
-        for direction in self.check_directions:
-            current_row = row
-            current_col = column
-            line_length = 0
-            while 0 <= current_row < self.rows and 0 <= current_col < self.cols and \
-                    self.board[current_row][current_col] == player_id:
-                line_length += 1
-                if line_length > 3:
-                    print(f"Player #{player_id} has won! It took {self.round_counter} rounds.")
-                    exit(0)
-                current_row += direction[0]
-                current_col += direction[1]
+        for direction_pair in self.direction_pairs:
+            line_length = 1
+            for direction in direction_pair:
+                current_row = row + direction[0]
+                current_col = column + direction[1]
+                while 0 <= current_row < self.rows and 0 <= current_col < self.cols and \
+                        self.board[current_row][current_col] == player_id:
+                    line_length += 1
+                    if line_length > 3:
+                        print(f"Player #{player_id} has won! It took {self.round_counter} rounds.")
+                        exit(0)
+                    current_row += direction[0]
+                    current_col += direction[1]
 
     def play(self):
         print("Welcome to the Connect4 CLI.\n"
